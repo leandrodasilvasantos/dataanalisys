@@ -1,0 +1,89 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+#
+#Jupyter [Python + Pandas + Matplotlib]
+#Leandro da Silva Santos
+#08/12/2024
+#
+
+##Inserir e ler database 
+file = "240730 Database S&P500.csv" #Arquivo Upado na árvore do Jupyter
+data = pd.read_csv(file)
+
+###Filtragem, Limpeza e Tratamento de Dados
+data_clean = data.drop(columns=["Unnamed: 15", "Unnamed: 16", "Unnamed: 17"])
+
+selected_metrics = ["PBookNTM", "PENTM", "EVEBITDANTM", "Industry", "daily_date"]
+missing_data = data_clean[selected_metrics].isnull().sum()
+data_clean = data_clean.dropna(subset=selected_metrics)
+data_clean['daily_date'] = pd.to_datetime(data_clean['daily_date'], format='%d/%m/%Y')
+missing_data, data_clean.info(), data_clean.head()
+
+###Gráfico das 3 métricas escolhidas
+# Gráfico: Média de PBookNTM por Indústria
+industry_means["PBookNTM"].sort_values().plot(kind='barh', figsize=(10, 6), title="Média de PBookNTM por Indústria")
+plt.xlabel("Média de PBookNTM")
+plt.ylabel("Indústria")
+plt.tight_layout()
+plt.show()
+
+# Gráfico: Média de PENTM por Indústria
+industry_means["PENTM"].sort_values().plot(kind='barh', figsize=(10, 6), title="Média de PENTM por Indústria")
+plt.xlabel("Média de PENTM")
+plt.ylabel("Indústria")
+plt.tight_layout()
+plt.show()
+
+# Gráfico: Média de EVEBITDANTM por Indústria
+industry_means["EVEBITDANTM"].sort_values().plot(kind='barh', figsize=(10, 6), title="Média de EVEBITDANTM por Indústria")
+plt.xlabel("Média de EVEBITDANTM")
+plt.ylabel("Indústria")
+plt.tight_layout()
+plt.show()
+
+###Gráfico de Tendências
+# Limpeza de dados e conversão de datas
+data_cleaned = data.drop(columns=["Unnamed: 15", "Unnamed: 16", "Unnamed: 17"])
+selected_metrics = ["PBookNTM", "PENTM", "EVEBITDANTM"]
+data_cleaned = data_cleaned.dropna(subset=selected_metrics)
+data_cleaned['daily_date'] = pd.to_datetime(data_cleaned['daily_date'], format='%d/%m/%Y')
+
+# Adicionar coluna de ano para análise anual
+data_cleaned['year'] = data_cleaned['daily_date'].dt.year
+
+# Agrupar os dados por ano e calcular as médias das métricas
+trend_analysis = data_cleaned.groupby("year")[selected_metrics].mean()
+
+# Gráfico: Tendência de PENTM ao longo do tempo
+plt.figure(figsize=(10, 6))
+plt.plot(trend_analysis.index, trend_analysis["PENTM"], marker='o', label="PENTM")
+plt.title("Tendência de PENTM ao Longo do Tempo")
+plt.xlabel("Ano")
+plt.ylabel("Média de PENTM")
+plt.grid()
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# Gráfico: Tendência de PBookNTM ao longo do tempo
+plt.figure(figsize=(10, 6))
+plt.plot(trend_analysis.index, trend_analysis["PBookNTM"], marker='o', label="PBookNTM")
+plt.title("Tendência de PBookNTM ao Longo do Tempo")
+plt.xlabel("Ano")
+plt.ylabel("Média de PBookNTM")
+plt.grid()
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# Gráfico: Tendência de EVEBITDANTM ao longo do tempo
+plt.figure(figsize=(10, 6))
+plt.plot(trend_analysis.index, trend_analysis["EVEBITDANTM"], marker='o', label="EVEBITDANTM")
+plt.title("Tendência de EVEBITDANTM ao Longo do Tempo")
+plt.xlabel("Ano")
+plt.ylabel("Média de EVEBITDANTM")
+plt.grid()
+plt.legend()
+plt.tight_layout()
+plt.show()
